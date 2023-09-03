@@ -1,0 +1,204 @@
+USER CREATION:
+connect system
+create user username identified by password;
+alter user system identified by pass;
+grant all privileges to username;
+
+-----------------------------
+SYNTAX:
+SELECT columns, aggregate func FROM table JOINS table JOIN CONDION WHERE condition GROUP BY (column) HAVING condition  ORDER BY;
+-----------------------------------------
+PL/SQL:
+set serveroutput on;
+DECLARE
+var datatype table.col%type;
+var datatype := value;
+BEGIN
+dbms.output.put_line('string' || var);
+select table value INTO created var from table;
+------ 
+   IF (created var >=< value)
+	THEN working
+   ELSIF (condition)
+	THEN working
+   ELSE 
+	working
+   END IF; 
+------
+   CASE var
+	WHEN match 
+	THEN  working
+   ELSE 
+	working
+   END CASE;
+-------
+FOR iterator in select query/cursor
+	LOOP 
+		working
+	END LOOP;
+--------
+WHILE condition
+	LOOP 
+		working
+	END LOOP;
+--------
+EXCEPTION
+
+END;
+-----------------
+VIEWS:
+1) Updateable views ---> data can be altered
+create view as query;
+2) Read Only views ---> data can not be altered
+create view as query with read only;
+3) Materialized views ---> backup storage etc
+create materialized view as query;
+---------------------------------
+FUNCTIONS:
+create function name(value needed in data type)
+return var_datatype (must)
+IS
+var declarations;
+BEGIN
+	working
+	RETURN (var);
+END;
+SELECT name(params) from dual;
+----------------------------
+STORED PROCEDURE: 
+create procedure name(value needed in data type)
+return var_datatype (if needed)
+IS
+var declarations;
+BEGIN
+	working
+	RETURN (var);
+END;
+exec name(params);
+------------
+CURSORS:
+CURSOR name IS query;  --> cursor creation
+var name%rowtype;  --> pointer creation
+OPEN name;
+FETCH name into var; --> giving cursor to pointer
+CLOSE name;
+----------------------------------------
+TRIGGERS:
+create or replace trigger name
+before/after insert /update/delete
+on table
+for each row
+DECLARE
+	if required
+BEGIN
+	working (:OLD / :NEW to access values)
+END;
+----------------------------------------
+
+TRANSACTIONS:
+SET TRANSACTION name abc;
+SAVEPOINT name;
+ROLLBACK; --> undo all changes
+ROLLBACK TO SAVEPOINT name; --> undo changes till given savepoint
+COMMIT; --> save changes
+----------------------------------------
+CHICKEN EGG PROBLEM:
+
+1) CREATE TABLES WITH PRIMARY KEY ONLY;
+2) ALTER TABLE TO ADD FOREIGN KEYS AND INCLUDE THIS STATEMENT 'initially deferred deferrable;'
+3) THEN INSERT VALUES ONLY
+
+-----------------------------------------
+GROUP BY:
+# column on which u apply group by must be in select clause
+SELECT col, agg func(x) from table group by col having agg func(x) condition;
+SUB QUERY:
+# order by doesnt work with sub queries
+# inner queries must return col that is to matched
+select col from table where col expression operator (select col from table where condition);
+# use set operators if single value is to be returned otherwise use 'any,all or in' for multiple values.
+-------------------------------------
+JOINS:
+# Cartesian Join --> all possible combinations 
+select * from table1 cross join table2;
+# Inner Join --> common values for a column returned
+select * from table1, table2 where table1.col = table2.col;
+select * from table1 join table2 using (table1.col,table2.col);
+select * from table1 inner join table2 ib table1.col = table2.col;
+# Natural Join --> join table with replica col name
+select * from table1 natural join table2;
+# Self Join --> join table with itself
+select * from table1 as a , table2 as b where a.col=b.col;
+# Outer Join --> includes one table completely
+selct col from table1 left/right/full outer join table2 on condition; 
+----------------------------------------
+SET OPERATIONS:
+UNION --> select clause1 union select clause2
+INTERSECT --> select clause1 intersect select clause2
+MINUS --> select clause1 minus select clause2
+------------------------------------
+DDL + DML:
+CREATE TABLE name (col datatype constraints check (condition) default value);
+ALTER TABLE name ADD CONSTRAINT name constraint(column);
+ALTER TABLE name DROP CONSTRAINT name;
+ALTER TABLE name DROP COLUMN col_name;
+ALTER TABLE name ADD FOREIGN KEY(col) REFRENCES Parent(col); 
+ALTER TABLE name MODIFY columnName Value;
+ALTER TABLE table_name RENAME TO new_table_name;
+CREATE unique index name on table_name (cols); --> creates index
+DROP index name;
+TRUNCATE TABLE name;  --> deletes data
+
+INSERT INTO name(Columns) values (vals);
+UPDATE name SET col = val where condition;
+DELETE FROM name where condition;
+
+---------------------------------------
+FUNCTIONS:
+select unique col_name from table ;  --> remove duplicates
+select all col_name from table; --> include duplicates of that column
+select * from table; --> return entire table
+
+select * from table where col1 > something and col2 < something;  --> comparison search
+select * from table where col between value1 and value2; --> range search
+select * from table where col IN ('','');  --> set membership search
+select * from table where col like ''; --> patten search
+    (_ --> one char   % --> many chars )
+select * from table where col is null/ not null;  --> null check
+
+
+select func from dual; where func is :
+abs(x) --> returns value withput sign
+ceil(x) --> returns upper number
+floor(x) --> returns lower number
+trunc(x,y) --> truncates value of number x upto y decimal places
+round(x,y) --> rounds off x to y decimal places
+greatest(x,y,z) --> returns greatest value
+least(x,y,z) --> returns least value
+lower(string) --> converts string to lowercase
+upper(string) --> converts string to uppercase
+initcap(string) --> converts string to camelcase
+ltrim(string,trim_txt) --> remove trim_txt from string from left side
+rtrim(string,trim_txt) --> remove trim_txt from string from right side
+trim(trim_txt FROM string) --> remove trim_txt from string
+substr(string,m,n) --> return n number of chars from mth position
+length(string) --> return string length
+lpad(string,n,pad_val) --> add pad_val to left make string size of n  
+rpad(string,n,pad_val) --> add pad_val to right make string size of n 
+add_months(date,n) --> add n months to date and return new date
+months_between(x1,x2) --> return no. of months between x1 and x2
+next_day(x,weekday) --> returns date of that day=weekday after x
+last_day(x) --> returns last day of month in date x
+sysdate --> returns system's curr date
+new_time(x,z1,z2) --> returns time of zone2 that corresponds to time x of zone 1
+extract(month/year from date) --> returns required portion of date
+to_char(val,'string') --> converts val to format of string
+to_date(string,format) --> converts string to date format
+nvl(x,y) --> if x is null replace it with y
+decode(a,b,c,d,e,default) --> checks if a=b then returns c & if a=d then return e else return default
+avg(col) --> returns avg of that column
+min(col) --> returns min value of that column
+max(col) --> returns max value of that column
+sum(col) --> returns total sum of that column
+first(col) --> returns first entry of that column
+last(col) --> returns last entry of that column

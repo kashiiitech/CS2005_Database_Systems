@@ -1,0 +1,280 @@
+
+--TASK1
+set serveroutput on;
+ACCEPT ID hr.EMPLOYEES.EMPLOYEE_ID%type PROMPT 'ENTER THE EMPLOYEE ID: ';
+DECLARE
+  ID hr.EMPLOYEES.EMPLOYEE_ID%type;
+  salary hr.EMPLOYEES.SALARY%type;
+  amount REAL;
+BEGIN
+  ID := &ID;
+  SELECT SALARY INTO salary FROM hr.EMPLOYEES WHERE EMPLOYEE_ID = ID;
+  IF(salary<1000) THEN
+    amount := salary*0.1;
+  ELSIF (salary>=1000 AND salary<=1500) THEN
+    amount := salary*0.15;
+  ELSE
+    amount := salary*0.20;
+  dbms_output.put_line('BONUS AMOUNT IS: ' || amount);
+  END IF;
+END;
+
+
+
+--TASK2
+set serveroutput on;
+ACCEPT ID hr.EMPLOYEES.EMPLOYEE_ID%type PROMPT 'ENTER THE EMPLOYEE ID: '
+DECLARE
+  ID hr.EMPLOYEES.EMPLOYEE_ID%type;
+  comm hr.EMPLOYEES.COMMISSION_PCT%type;
+  sal hr.EMPLOYEES.SALARY%type;
+BEGIN
+  ID := &ID;
+  SELECT SALARY, COMMISSION_PCT INTO sal, comm FROM EMPLOYEES WHERE EMPLOYEE_ID = ID;
+  IF(comm IS NOT NULL) THEN
+    UPDATE EMPLOYEES SET SALARY = sal+comm WHERE EMPLOYEE_ID = ID;
+  END IF;
+  dbms_output.put_line('SALARY HAS BEEN UPDATED SUCCESSFULLY!');
+END;
+
+
+
+--TASK 3
+set serveroutput on;
+declare
+name HR.DEPARTMENTS.department_name%type;
+id hr.DEPARTMENTS.DEPARTMENT_ID%type := 30;
+begin
+SELECT DISTINCT hr.DEPARTMENTS.DEPARTMENT_NAME INTO name FROM hr.EMPLOYEES INNER JOIN hr.DEPARTMENTS ON hr.EMPLOYEES.DEPARTMENT_ID = hr.DEPARTMENTS.DEPARTMENT_ID
+    WHERE hr.DEPARTMENTS.DEPARTMENT_ID = id;
+    dbms_output.put_line('DEPARTMENT NAME IS: ' || name);
+END;
+
+--TASK 4
+set serveroutput on;
+CREATE OR REPLACE PROCEDURE job_nature(id in NUMBER)
+IS 
+BEGIN
+    for x in (SELECT DISTINCT JOB_TITLE FROM hr.EMPLOYEES, hr.DEPARTMENTS, JOBS WHERE EMPLOYEES.JOB_ID = JOBS.JOB_ID 
+        and employees.department_id = hr.departments.department_id and hr.departments.department_id = id)
+    loop
+        dbms_output.put_line('NATURE OF JOB IS: ' || x.JOB_TITLE);
+    end loop;
+END;
+EXEC job_nature(20);
+
+
+
+--TASK 5
+set serveroutput on;
+CREATE OR REPLACE PROCEDURE salary_check(id in NUMBER)
+IS 
+BEGIN
+    for x in (SELECT DISTINCT EMPLOYEE_ID, SALARY FROM EMPLOYEES WHERE DEPARTMENT_ID = id)
+    loop
+        dbms_output.put_line('SALARY OF THE EMPLOYEE ' || x.EMPLOYEE_ID || ' IS : ' || x.SALARY);
+    end loop;
+END;
+EXEC salary_check(20);
+
+
+
+--> TASK 6
+set serveroutput on;
+CREATE OR REPLACE PROCEDURE salary_update(emp_no in NUMBER)
+IS 
+salary EMPLOYEES.SALARY%type;
+BEGIN
+    SELECT SALARY INTO salary FROM EMPLOYEES WHERE EMPLOYEE_ID = emp_no;
+    UPDATE EMPLOYEES SET SALARY = salary+ (salary*0.10) WHERE EMPLOYEE_ID = emp_no;
+    dbms_output.put_line('SALARY OF THE EMPLOYEE ' || emp_no || ' UPDATED!');
+END;
+EXEC salary_update(100);
+
+
+
+--TASK 7
+set serveroutput on;
+CREATE OR REPLACE PROCEDURE add_salary(dept_no in NUMBER)
+IS 
+emp_salary EMPLOYEES.SALARY%type;
+BEGIN
+    for x in (SELECT EMPLOYEE_ID, SALARY FROM EMPLOYEES WHERE DEPARTMENT_ID = dept_no)
+    LOOP
+        IF(x.SALARY > 5000) THEN
+            UPDATE EMPLOYEES SET SALARY = x.SALARY + 1000 WHERE EMPLOYEE_ID = x.EMPLOYEE_ID;
+            dbms_output.put_line('SALARY FO THE EMPLOYEE ' || x.EMPLOYEE_ID || ' UPDATED!');
+        END IF;
+    END LOOP;
+END;
+EXEC add_salary(20);
+
+
+
+--TASK 8
+--a
+CREATE OR REPLACE VIEW EMP_DESIGNATION(JOB_ID, COUNT_EMPLOYEES) AS 
+SELECT JOB_ID, COUNT(JOB_ID) AS COUNT_EMPLOYEES FROM EMPLOYEES GROUP BY JOB_ID;
+SELECT * FROM EMP_DESIGNATION;
+
+--b
+CREATE OR REPLACE VIEW DISPLAY_EMPLOYEE(EMPLOYEE_ID, EMPLOYEE_NAME, DEPARTMENT_ID, DEPARTMENT_NAME)
+AS SELECT E.EMPLOYEE_ID, E.FIRST_NAME || ' ' || E.LAST_NAME AS empname, E.DEPARTMENT_ID, D.DEPARTMENT_NAME
+FROM EMPLOYEES E, DEPARTMENTS D WHERE E.DEPARTMENT_ID = D.DEPARTMENT_ID AND lower(E.FIRST_NAME) <> 'king';
+SELECT * FROM DISPLAY_EMPLOYEE;
+
+--c
+CREATE OR REPLACE VIEW  DISPLAY_EMPLOYEES(EMPLOYEE_ID, EMPLOYEE_NAME, DEPARTMENT_ID, DEPARTMENT_NAME)
+AS SELECT E.EMPLOYEE_ID, E.FIRST_NAME || ' ' || E.LAST_NAME AS empname, E.DEPARTMENT_ID, D.DEPARTMENT_NAME
+FROM EMPLOYEES E, DEPARTMENTS D WHERE E.DEPARTMENT_ID = D.DEPARTMENT_ID;
+SELECT * FROM DISPLAY_EMPLOYEES;
+
+
+--TASK 9
+set serveroutput on;
+DECLARE
+    VAR1 INTEGER;
+    VAR2 INTEGER;
+    VAR3 INTEGER;
+BEGIN
+    VAR1 := &VAR1;
+    VAR2 := &VAR2;
+    VAR3 := VAR1 + VAR2;
+    dbms_output.put_line('TOTAL SUM: ' || VAR3);
+END;
+
+
+
+--TASK 10
+set serveroutput on;
+DECLARE
+    VAR1 INTEGER;
+    VAR2 INTEGER;
+    TOTAL INTEGER:=0;
+BEGIN
+    VAR1 := &VAR1;
+    VAR2 := &VAR2;
+    for c in VAR1 .. VAR2
+    LOOP
+        TOTAL:=TOTAL+c;
+    END LOOP;
+    dbms_output.put_line('TOTAL SUM: ' || TOTAL);
+END;
+
+
+
+--TASK 11
+set serveroutput on;
+DECLARE
+    employee_no EMPLOYEES.EMPLOYEE_ID%type;
+    employee_name EMPLOYEES.FIRST_NAME%type;
+    employee_hire_date EMPLOYEES.HIRE_DATE%type;
+    employee_department_name DEPARTMENTS.DEPARTMENT_NAME%type;
+BEGIN
+    employee_no := &employee_no;
+    SELECT E.EMPLOYEE_ID, E.FIRST_NAME || ' ' || E.LAST_NAME,  E.HIRE_DATE, D.DEPARTMENT_NAME INTO employee_no, 
+    employee_name, employee_hire_date, employee_department_name
+    FROM EMPLOYEES E, DEPARTMENTS D WHERE E.DEPARTMENT_ID = D.DEPARTMENT_ID AND E.EMPLOYEE_ID = employee_no;
+    dbms_output.put_line('EMPLOYEE ID: ' || employee_no || ' , EMPLOYEE NAME: ' || employee_name || ' , HIRE DATE: ' || employee_hire_date || ' ,DEPARTMENT NAME: ' || employee_department_name);
+END;
+
+
+
+--TASK 12
+
+set serveroutput on;
+DECLARE
+    PALINDROME VARCHAR(20);
+    REVERSE_NUMBER VARCHAR(20);
+BEGIN 
+    PALINDROME := &PALINDROME;
+    SELECT REVERSE(PALINDROME) INTO REVERSE_NUMBER FROM DUAL;
+    IF(PALINDROME = REVERSE_NUMBER) THEN
+        dbms_output.put_line('THE NUMBER ' ||PALINDROME|| ' IS PALINDROME!');
+    ELSE
+        dbms_output.put_line('THE NUMBER ' ||PALINDROME|| ' IS NOT A PALINDROME!');
+    END IF;
+END;
+
+
+
+--TASK 13
+set serveroutput on;
+DECLARE
+    emp_id  EMPLOYEES.EMPLOYEE_ID%type;
+    emp_first EMPLOYEES.FIRST_NAME%type;
+    emp_last EMPLOYEES.LAST_NAME%type;
+    emp_email EMPLOYEES.EMAIL%type;
+    emp_phone EMPLOYEES.PHONE_NUMBER%type;
+    emp_hire EMPLOYEES.HIRE_DATE%type;
+    emp_job_id EMPLOYEES.JOB_ID%type;
+    emp_salary EMPLOYEES.SALARY%type;
+    emp_comm EMPLOYEES.COMMISSION_PCT%type;
+    emp_manager_id EMPLOYEES.MANAGER_ID%type;
+    emp_depno EMPLOYEES.DEPARTMENT_ID%type;
+    emp_depart_name DEPARTMENTS.DEPARTMENT_NAME%type;
+    emp_location_id DEPARTMENTS.LOCATION_ID%type;
+BEGIN
+    emp_id := &emp_id;
+    emp_first := &emp_first;
+    emp_last := &emp_last;
+    emp_email := &emp_email;
+    emp_phone := &emp_phone;
+    emp_hire := &emp_hire;
+    emp_job_id := &emp_job_id;
+    emp_salary := &emp_salary;
+    emp_comm := &emp_comm;
+    emp_manager_id := &emp_manager_id;
+    emp_depno := &emp_depno;
+    emp_depart_name := &emp_depart_name;
+    emp_location_id := &emp_location_id;
+    INSERT INTO EMPLOYEES (employee_id,first_name,last_name,email,phone_number,hire_date,job_id,salary,commission_pct, manager_id,department_id) 
+        VALUES (emp_id,emp_first,emp_last,emp_email,emp_phone,emp_hire,emp_job_id,emp_salary,emp_comm,emp_manager_id,emp_depno)
+    INSERT INTO DEPARTMENTS(DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER_ID, LOCATION_ID)
+        VALUES(emp_depno,emp_depart_name,emp_manager_id,emp_location_id);
+    dbms_output.put_line('Record entered!');
+END;
+
+
+
+--TASK 14
+set serveroutput on;
+DECLARE
+    emp_salary EMPLOYEES.SALARY%type:=0;
+    emp_first_name EMPLOYEES.FIRST_NAME%type;
+    emp_last_name EMPLOYEES.LAST_NAME%type;
+    emp_employee_id EMPLOYEES.EMPLOYEE_ID%type := 7499;
+    emp_manager_id EMPLOYEES.MANAGER_ID%type := 7499;
+BEGIN
+    SELECT MANAGER_ID INTO emp_manager_id FROM EMPLOYEES WHERE EMPLOYEE_ID = emp_employee_id;
+    WHILE(emp_salary <= 2500)
+    LOOP
+        SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY INTO emp_employee_id, emp_first_name, emp_last_name, emp_salary
+        FROM EMPLOYEES WHERE EMPLOYEE_ID = emp_employee_id;
+    END LOOP;
+    dbms_output.put_line('EMPLOYEE HIGHER IN CHAIN OF COMMAND IS: ' || emp_first_name || ' ' || emp_last_name || ' WITH SALARY: ' || emp_salary);
+EXCEPTION
+    WHEN NO_DATA_FOUND
+    THEN
+        dbms_output.put_line('RECORD WITH EMPLOYEE ID: ' || emp_employee_id || ' DOES NOT EXIST');
+END;
+
+
+--TASK 15
+set serveroutput on;
+DECLARE
+    START_ NUMBER := 1;
+    END_ NUMBER := 100;
+    SUM_ NUMBER := 0;
+BEGIN
+    FOR x in START_ .. END_
+    LOOP
+        SUM_ := SUM_+ x;
+    END LOOP;
+    dbms_output.put_line('TOTAL SUM: ' || SUM_);
+END;
+    
+    
+
+
+

@@ -1,0 +1,25 @@
+--TASK 1
+create table persons(person_id int,f_name varchar(20),l_name varchar(20),address varchar(50),city varchar(20),age int);
+alter table persons add constraint persons_pk primary key (person_id);
+insert into persons values(1,'arham','afzal','oheioqwheihqnkqoqw','karachi',20);
+insert into persons values(2,'muneeb','khan','aksdnodjoiqwnfodf','karachi',22);
+insert into persons values(3,'yahya','naved','rtuiwjifbjkfbnmer','lahore',19);
+insert into persons values(4,'faizan','khan','rewiweuirhwejrbwejr','islamabad',21);
+insert into persons values(5,'amir','khan','rtiweirbjkfwefewr','karachi',20);
+savepoint five_insertions;
+insert into persons values(6,'rida','anwar','werheiwrhiweriwer','multan',18);
+insert into persons values(7,'erum','baji','weruibkscvnalsdkjsa','karachi',20);
+insert into persons values(8,'aloo','mian','kldsnklsdbahsdoiwbnw','karachi',20);
+insert into persons values(9,'zaeem','aslam','oheioqwheihqnkqoqw','karachi',25);
+insert into persons values(10,'ashber','flaka','oheioqwheihqnkqoqw','karachi',23);
+update persons set f_name='rida' where f_name='erum';
+select * from persons;
+rollback to savepoint five_insertions;
+select * from persons;
+--after roll back only the entires entered above the savepoint were entered and the rest were discarded
+
+--TASK 2
+--reenter the entries after entry 5
+update persons set age=30 where person_id=8;
+select * from persons;
+--the unshared connection didnt update it in the original database as the changes werent committed in the unshared connection, upon commit the changes were saved and age changed to 31

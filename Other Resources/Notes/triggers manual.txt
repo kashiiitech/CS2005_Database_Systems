@@ -1,0 +1,125 @@
+Connect System
+pass word : fast
+Create a local user first:
+Create user your_user identified by fast;
+Grant all privileges to your_user;
+Connect your_user
+Password fast;
+Create table emp20 (id number, name varchar(20), age number, address varchar(20), salary number);
+Insert into emp20(id, name, age, address, salary)  
+Select 1, 'Adams', 25, 'South Wales', 2400 from dual union all
+Select 2, 'James', 23, 'Orlando', 2100 from dual union all
+Select 3, 'Leena', 27, 'Vatican City', 2900 from dual union all
+Select 4, 'John', 29, 'North Hampshire', 3100 from dual union all
+Select 5, 'Nancy', 24, 'Dublin', 2500 from dual union all
+Select 6, 'Sarah', 22, 'Dublin', 2700 from dual;
+//Create a trigger on insert of emp20
+create or replace trigger emp20_trigger
+before delete or insert or update on emp20
+for each row
+declare
+new_sal number;
+begin
+new_sal := :new.salary - :old.salary;
+dbms_output.put_line('');
+dbms_output.put_line('Old Salary ' || :old.salary);
+dbms_output.put_line('New Salary ' || :new.salary);
+dbms_output.put_line('Difference '|| new_sal);
+dbms_output.put_line('');
+end;
+/
+
+Now insert a new record but before that
+ set serveroutput on;
+insert into emp20 values(7, 'Jenny', 24, 'Paris', 2900);
+
+
+create or replace trigger emp20_trigger2
+before update of salary on emp20
+for each row
+declare 
+inc_sal number;
+begin
+new_sal := :old.salary * 1.15;
+dbms_output.put_line('');
+dbms_output.put_line('Old Salary ' || :old.salary);
+dbms_output.put_line('new salary THROUGH UPDATE ' || :new.salary);
+dbms_output.put_line('Incremented sal using assignment ' || inc_sal);
+dbms_output.put_line('');
+end;
+
+create table product(product_id number, product_name varchar(20), supplier_name varchar(20), product_price number(7,2));
+create table product_price_history(product_id number, product_name varchar(20), supplier_name varchar(20), product_price number(7,2));
+
+
+
+create or replace trigger pice_history_trigger
+before update of product_price on product
+for each row
+begin
+insert into product_price_history values(:old.product_id, :old.product_name, :old.supplier_name, :old.product_price);
+end;
+
+
+insert into product values (101, 'Laptop', 'Dell', 230);
+insert into product values (102, 'Laptop', 'HP', 262.22);
+
+
+select * from product;
+select * from product_price_history;
+
+update  product set product_price = 800 where product_id = 101;
+
+select * from product_price_history;
+
+//hierarchy of Triggers
+/Before Statement
+/Before Row level
+/After Row Level
+/After Statement
+
+create table product_check(message varchar(50), current_time timestamp);
+
+create or replace trigger before_update_stmt_trigger
+before
+ update on product
+begin
+insert into product_check values('Before Update Stmt Level', sysdate);
+end;
+
+
+create or replace trigger before_update_row_trigger
+before
+update on product
+for each row
+begin
+insert into product_check values('Before Update Row Level', sysdate);
+end;
+
+
+
+create or replace trigger after_update_stmt_trigger
+after
+ update on product
+begin
+insert into product_check values('After Update Stmt Level', sysdate);
+end;
+
+
+
+create or replace trigger after_update_row_trigger
+after
+ update on product
+for each row
+begin
+insert into product_check values('After Update Row Level', sysdate);
+end;
+
+
+select * from product;
+select * from product_check;
+
+
+update product set product_price = 400 where product_id = 400;
+
+select * from product_check;

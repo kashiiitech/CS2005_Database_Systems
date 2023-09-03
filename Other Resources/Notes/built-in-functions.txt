@@ -1,0 +1,36 @@
+BUILT-IN FUNCTIONS:
+
+STRING:
+LOWER(str) -> all letters to lowercase (eg: good morning)
+UPPER(str) -> all letters to uppercase (eg: GOOD MORNING)
+INITCAP(str) -> all letters to mixed case (eg: Good Morning)
+LTRIM(str1,str2) -> str2 removed from str1 from left (eg: str1=Good Morning str2=Good ans=Morning)
+RTRIM(str1,str2) -> str2 removed from str1 from right (eg: str1=Good Morning str2=Morning ans=Good)
+TRIM(str1,str2) -> str2 removed from str1 (eg: str1=Good Morning str2=oo ans=Gd Morning)
+SUBSTR(str,m,n) -> returns n characters from str starting at m position (eg: str=Good Morning m=6 n=7 ans=Morning)
+LENGTH(str) -> return length of string (eg: str=Good Morning ans=12)
+LPAD(str,n,pad) -> returns str with pad added to left to make it up to n characters (eg: str=Good m=6 pad=* ans=**Good)
+RPAD(str,n,pad) -> returns str with pad added to right to make it up to n characters (eg: str=Good m=6 pad=* ans=Good**)
+
+DATE:
+ADD_MONTHS(date,n) -> returns date adding n months to date (eg: date=16-SEP-81 =3 ans=16-DEC-81)
+MONTHS_BETWEEN(d1,d2) -> returs months between d1 & d2 (eg: d1=16-SEP-81 d2=16-DEC-81 ans=3)
+NEXT_DAY(date,day) -> returns the date of the day on which given day occurs after given date (eg: date=01-JUN-08 day=Wednesday ans=04-JUN-08)
+LAST_DAY(date) -> returns last date of the month of given date (eg: date=01-JUN-08 ans=30-JUN-08)
+SYSDATE -> returs current date and time
+NEW_TIME(date,z1,z2) -> returns date and time of zone2 for the given date and time in zone1 (eg: date=01-JUN-08 z1=AST z2=EST ans=31-MAY-08)
+EXTRACT(* from date) -> returns whatever paremeter is given as * (day,month,year) from given date (eg: *=month date=sysdate ans=12)
+
+CONVERSION:
+TO_CHAR(x,y) -> converts numeric/date x to a string based on y (eg: x=3000 y=$9999 ans=$3000, eg: x=SYSDATE y='Day,Month YYYY' ans=Tuesday,December 2022)
+TO_DATE(x) -> converts valid value x to a specified date format (eg: x=01-Jun-08 ans=01-JUN-08)
+NVL(x,y) -> replaces x with y if x is null (y and x of same data type)
+DECODE(a,b,c,d,e,default) -> checks value of a, if a=b then returns c. if a=d returns e. else returns default
+
+AGGREGATE:
+AVG(col) -> average of col
+MIN(col) -> minimum of col
+MAX(col) -> maximum of col
+SUM(col) -> sum of col
+FIRST(col) -> first value of col
+LAST(col) -> last value of col

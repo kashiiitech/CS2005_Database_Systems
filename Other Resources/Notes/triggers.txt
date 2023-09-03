@@ -1,0 +1,114 @@
+***IMPORTANT***
+TO LOG ALL THE UPDATES/DELETES/INSERTIONS ON TABLES (create the
+CREATE TABLE schema_audit
+  (
+    ddl_date       DATE,
+    ddl_user       VARCHAR2(15),
+    object_created VARCHAR2(15),
+    object_name    VARCHAR2(15),
+    ddl_operation  VARCHAR2(15)
+  );
+CREATE OR REPLACE TRIGGER hr_audit_tr 
+AFTER DDL ON SCHEMA
+BEGIN
+    INSERT INTO schema_audit VALUES (
+sysdate, 
+sys_context('USERENV','CURRENT_USER'), 
+ora_dict_obj_type, 
+ora_dict_obj_name, 
+ora_sysevent);
+END;
+/
+
+
+TRIGGER MANUAL:
+
+CREATE TABLE Person (
+ID int NOT NULL,
+Name varchar (50) NOT NULL,
+PreviousName varchar (50) NULL,
+SameNameCount int NULL,
+CONSTRAINT pk_Person PRIMARY KEY (ID));
+CREATE TABLE Person (
+ID int NOT NULL,
+Name varchar (50) NOT NULL,
+PreviousName varchar (50) NULL,
+SameNameCount int NULL,
+CONSTRAINT pk_Person PRIMARY KEY (ID));
+
+---------------------------------
+Trigger#01:
+---------------------------------
+CREATE OR REPLACE TRIGGER update_previous_name
+BEFORE UPDATE ON Person
+FOR EACH ROW
+BEGIN
+	:new.PreviousName := :old.Name;
+	dbms_output.put_line('');
+	dbms_output.put_line('OLD NAME' || :old.PreviousName);
+	dbms_output.put_line('NEW NAME' || :new.Name);
+	dbms_output.put_line('');
+END;
+
+INSERT INTO Person (ID, Name) values (1, 'arham');
+INSERT INTO Person (ID, Name) values (2, 'faizan');
+INSERT INTO Person (ID, Name) values (3, 'zaeem');
+INSERT INTO Person (ID, Name) values (4, 'yahya');
+
+UPDATE Person SET Name = 'abdullah' WHERE ID = 4;
+SELECT * FROM Person;
+
+---------------------------------
+Trigger#02:
+---------------------------------
+CREATE OR REPLACE TRIGGER set_same_name_count
+AFTER INSERT OR DELETE OR UPDATE OF Name
+ON Person
+BEGIN
+	UPDATE Person A SET SameNameCount = (SELECT COUNT(*) FROM Person WHERE NAME = A.Name);
+END;
+
+INSERT INTO Person (ID, Name) values (5, 'arham');
+INSERT INTO Person (ID, Name) values (6, 'faizan');
+INSERT INTO Person (ID, Name) values (7, 'zaeem');
+INSERT INTO Person (ID, Name) values (8, 'yahya');
+SELECT * FROM Person;
+
+
+---------------------------------
+Trigger#01:
+---------------------------------
+CREATE OR REPLACE TRIGGER update_previous_name
+BEFORE UPDATE ON Person
+FOR EACH ROW
+BEGIN
+	:new.PreviousName := :old.Name;
+	dbms_output.put_line('');
+	dbms_output.put_line('Old Name' || :old.PreviousName);
+	dbms_output.put_line('New Name' || :new.Name);
+	dbms_output.put_line('');
+END;
+
+INSERT INTO Person (ID, Name) values (1, 'Faizan');
+INSERT INTO Person (ID, Name) values (2, 'Javeria');
+INSERT INTO Person (ID, Name) values (3, 'Hiba');
+INSERT INTO Person (ID, Name) values (4, 'Nabiha');
+
+UPDATE Person SET Name = 'Vania' WHERE ID = 3;
+SELECT * FROM Person;
+
+---------------------------------
+Trigger#02:
+---------------------------------
+CREATE OR REPLACE TRIGGER set_same_name_count
+AFTER INSERT OR DELETE OR UPDATE OF Name
+ON Person
+BEGIN
+	UPDATE Person A SET SameNameCount = (SELECT COUNT(*) FROM Person WHERE NAME = A.Name);
+END;
+
+INSERT INTO Person (ID, Name) values (5, 'Faizan');
+INSERT INTO Person (ID, Name) values (6, 'Javeria');
+INSERT INTO Person (ID, Name) values (7, 'Hiba');
+INSERT INTO Person (ID, Name) values (8, 'Nabiha');
+SELECT * FROM Person;

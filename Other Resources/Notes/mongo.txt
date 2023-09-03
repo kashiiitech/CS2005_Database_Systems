@@ -1,0 +1,92 @@
+MONGODB:
+NAVIGATE TO CORRECT FOLDER:
+1) cd "Program Files" from c directory
+2) cd MongoDB 
+3) cd Server
+4) cd 3.4
+5) cd bin
+6) mkdir \data\db {if required}
+7) mongod
+8) repeat steps from 1-6 in another terminal
+9) mongo  
+10) connection established time to work in mongo
+--------------------------------------
+COMMANDS:
+--> to check existing dbs (db)
+--> to get help (db.help())
+--> to see stats (db.stats())
+--> create a db (use db_name)
+--> to see db list (show dbs)
+--> to insert doc in db ( db.db_name.insert({"name":"value"}))
+--> drop db (db.dropDatabase())
+--> to create collection (db.createCollection("name"))
+--> drop collection (db.collection_name.drop())
+--> insert doc in collection (db.collection_name.insert(document_name) )
+
+--> retrieve unfiltered data in non-structured way (db.collection_name.find())
+--> retrieve unfiltered data in structured way (db.collection_name.find().pretty())
+--> retrieve filtered numeric data (db.collection_name.find({ "column":{$lt/lte/gt/gte/ne : value} }).pretty() )
+--> retrieve filtered string data (db.collection_name.find({ "column":"value" }))
+--> use and in retrieval (db.collection_name.find({ $and: [{col:value} , {col:value}] }))
+--> use or in retrieval (db.collection_name.find({ $or: [{col:value} , {col:value}] }))
+--> use and+or in retrieval (db.collection_name.find({col:value , $or: [{col:value} , {col:value}] }) )
+
+--> to update document values (db.collection_name.update({'colname' : value}, {$set: {'colname': value} }))
+--> to delete document (db.collection_name.remove({ 'colname' : value}) )
+----------------------------------------
+DOCUMENTS STRUCT:
+
+{ 
+colname : 'String' ,
+listcol : ['',''] ,
+intcol : value
+},
+
+{
+	if more than one doc to be inserted;
+	if u have to relate two table
+	tablename: [{ cols and values using syntax shown above}]
+}
+
+
+
+----------------------------------------------------
+
+TASKS:
+--1
+db.restaurants.find();
+
+--2
+db.restaurants.find({},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1}).pretty();
+
+
+--3
+db.restaurants.find({},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1,"_id":0}).pretty();
+
+
+--4
+db.restaurants.find({},{"restaurant_id" : 1,"name":1,"borough":1,"zipcode" :1,"_id":0}).pretty();
+
+
+--5
+db.restaurants.find({"borough": "Bronx"}).pretty();
+
+
+--6
+db.restaurants.find({"borough": "Bronx"}).limit(5);
+
+
+--7
+db.restaurant.find({"score" : {"$gt" : 90}}).pretty();
+
+
+--8
+db.restaurant.find({$and : [{"score" : {"$gt" : 90}},{"score" : {"$lt" : 100}}]}).pretty();
+
+
+--9
+db.restaurants.find({"lat_coord" : {$lt : -95.754168}}).pretty();
+
+
+--10
+db.restaurants.find({ "borough": "Bronx" , $or : [{ "cuisine" : "American " },{ "cuisine" : "Chinese" }] } ).pretty();
