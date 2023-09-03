@@ -1,0 +1,108 @@
+--Q1 a b c 
+create table Books (Book_id integer not null , Book_title varchar(50) not null , Book_author varchar(25) not null , Book_Status varchar(25) not null);
+select * from Books;
+create table Members ( Member_id integer not null , Member_name varchar(25) not null , Member_address varchar(50) not null , Member_expirydate date not null , Member_startdate date not null);
+select * from members;
+create table Supplier ( Supplier_id integer not null , Supplier_name varchar(25) not null , Supplier_address varchar(50) not null , Supplier_number numeric(11) not null);
+select * from Supplier;
+create table Publisher ( Publisher_id integer not null , Publisher_name varchar(25) not null , Publisher_address varchar(50) not null ,Publisher_expirydate date not null , Member_startdate date not null);
+select * from Publisher;
+create table Borrowed_by (Book_id integer not null , Member_id integer not null, Start_date TIMESTAMP not null , Return_date  TIMESTAMP not null , DueDate TIMESTAMP not null);
+select * from Borrowed_by;
+alter table Books add constraint books_primary_key primary key(Book_id);
+alter table Supplier add constraint Supplier_Primary_key primary key(Supplier_id);
+alter table Members add constraint Members_Primary_key primary key(Member_id);
+alter table Publisher add constraint Publisher_Primary_key primary key(Publisher_id);
+alter table Borrowed_by add constraint Borrowed_by_Primary_key primary key(Book_id,Member_id);
+alter table Borrowed_by add constraint foreign_key foreign key (Book_id) references Books(Book_id);
+alter table Borrowed_by add constraint foreign_key_1 foreign key(Member_id) references Members(Member_id);
+
+
+--Q1 d
+insert into Books values(45 , 'DataBase management system' , 'Muhammad Hammad' , 'Very Useful');
+insert into Books values(46 , 'DataBase management ' , 'Muhammad Hammad' , 'Very Useful');
+insert into Books values(47 , 'DataBase management system' , 'Muhammad Hammad' , 'Very Useful');
+insert into Books values(48 , 'DataBase management system' , 'Muhammad Hammad' , 'Very Useful');
+insert into Books values(49 , 'DataBase management system' , 'Muhammad Hammad' , 'Very Useful');
+
+insert into Members values(1,'Ali','Karachi',sysdate,sysdate);
+insert into Members values(2,'Ali','Lahore',sysdate,sysdate);
+insert into Members values(3,'Ali','Islamabad',sysdate,sysdate);
+insert into Members values(4,'Ali','Skardu',sysdate,sysdate);
+insert into Members values(5,'Ali','Hunza',sysdate,sysdate);
+
+insert into Supplier values(15,'Hammad' , 'Karachi' , 0213564);
+insert into Supplier values(18,'Hammad' , 'Karachi' , 0213564);
+insert into Supplier values(11,'Hammad' , 'Karachi' , 0213564);
+insert into Supplier values(10,'Hammad' , 'Karachi' , 0213564);
+insert into Supplier values(14,'Hammad' , 'Karachi' , 0213564);
+
+insert into Borrowed_by values(45,1,sysdate,sysdate,sysdate);
+insert into Borrowed_by values(49,2,sysdate,sysdate,sysdate);
+insert into Borrowed_by values(46,3,sysdate,sysdate,sysdate);
+insert into Borrowed_by values(47,4,sysdate,sysdate,sysdate);
+insert into Borrowed_by values(48,5,sysdate,sysdate,sysdate);
+
+insert into Publisher values(1,'Hammad' , 'Karachi'  , 12321);
+insert into Publisher values(21,'Hammad' , 'Karachi'  , 12321);
+insert into Publisher values(16,'Hammad' , 'Karachi'  , 12321);
+insert into Publisher values(17,'Hammad' , 'Karachi'  , 12321);
+insert into Publisher values(19,'Hammad' , 'Karachi'  , 12321);
+
+--Q1 e
+alter table Books drop constraint books_primary_key;
+alter table Borrowed_by drop constraint foreign_key;
+alter table Borrowed_by drop constraint foreign_key_1;
+alter table Members drop constraint Members_Primary_key;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--1
+select first_name || ' ' || last_name as "full name" from employees where first_name like 'A%' and last_name like '%n';
+--2
+select last_name from employees;
+select substr(last_name,length(last_name)-2,3) from employees ;
+--3
+select e.first_name , e.job_id , e.salary from employees e, jobs j where e.job_id=j.job_id and (j.job_title='Accountant' or j.job_title='accountant' or j.job_title='ACCOUNTANT');
+--4
+select employee_id, first_name , salary from employees order by salary desc;
+--5
+select * from employees;
+select e.employee_id , j.job_title , e.job_id , e.department_id , round((sysdate - e.hire_date),0)as "number of days" from employees e , jobs j where  e.job_id=j.job_id and e.department_id=90;
+--6
+select substr(first_name,0,3) || lower(substr(email,length(email)-2,3)) from employees;
+--7
+select d.department_name , count(e.DEPARTMENT_ID) from employees e, departments d where d.department_id=e.department_id group by e.department_id,d.department_name; 
+--8
+select e.first_name , e.salary , e.phone_number , e.hire_date , d.department_id , l.city from employees e,departments d,locations l  where e.department_id = d.department_id and d.location_id = l.location_id and l.city='Toronto';  
+--9
+select first_name || ' ' || last_name as "Full Name",Hire_Date, TO_CHAR(sysdate,'YYYY')- TO_CHAR(hire_date,'YYYY')as "Years Worked" from employees;
+--10
+select MANAGER_ID,min(salary) from employees group by manager_id;
+--11
+select first_name || ' ' || last_name as "Full Name", TO_CHAR(sysdate,'YYYY')- TO_CHAR(hire_date,'YYYY')as "Years Worked" from employees;
+--12
+select l.city , l.country_id , e.department_id from locations l , employees e , departments d ,countries c  where d.department_id=e.department_id and l.location_id = d.location_id group by e.department_id,l.city,l.country_id having count(*)>=3;
+--13
+select e.department_id, round(avg(e.salary),2) from departments d , employees e group by e.department_id having avg(e.salary)>2500;
+--14
+select e.last_name , d.department_name , e.salary  , e.manager_id ,l.city from locations l , departments d , employees e where d.department_id=e.department_id and l.location_id = d.location_id and e.last_name like '%y';
+--15
+select e.first_name , e.last_name , e.department_id , e.employee_id from employees e , job_history j where e.employee_id != j.employee_id;
